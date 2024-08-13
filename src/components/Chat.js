@@ -24,7 +24,7 @@ function Chat() {
 
     const handleStart = () => {
         
-        const sock = io('https://chat-with-strangers-oql4.onrender.com');
+        const sock = io('https://chat-with-strangers-oql4.onrender.com/8000');
 
         setSocket(sock);
         setConnecting(true)
