@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
+import { useParams } from 'react-router-dom';
 import Message from './Message'
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2'
 import {Oval} from 'react-loader-spinner'
+import EmojiPicker from 'emoji-picker-react';
+
 
 function Chat() {
 
@@ -10,6 +13,13 @@ function Chat() {
     const [socket, setSocket] = useState();
     const [allTexts, setAllTexts] = useState([]);
     const [connecting, setConnecting] = useState(false);
+    const[emojiPickerVisible, setEmojiPickerVisible] = useState(false)
+
+
+
+    const elementRef = useRef()
+    const buttonRef = useRef()
+    const params = useParams();
 
     const handleSubmit = () => {
         
@@ -22,12 +32,32 @@ function Chat() {
         setText("");
     }
 
+    const handleEmojiPicker  = () => {
+        setEmojiPickerVisible(!emojiPickerVisible)
+    }
+
+    const handleEmojiPicked = (emoji) => {
+        setText(text + emoji.emoji)
+    }
+
     const handleStart = () => {
         
-        const sock = io('https://chat-with-strangers-oql4.onrender.com');
+        if(socket) {
+            socket.disconnect();
+        }
+
+        const username = params.username
+
+        const sock = io('http://localhost:8000', {query:{username}});
+
+        console.log('username is ' + username)
 
         setSocket(sock);
         setConnecting(true)
+        console.log(elementRef.current)
+        elementRef.current.disabled = true
+        buttonRef.current.disabled = true
+
     }
 
     useEffect(() => {
@@ -35,15 +65,19 @@ function Chat() {
         socket.on('connect', () => {
             console.log(socket.id)
             console.log("User connected...")
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: `Your are connected with user`,
-                showConfirmButton: false,
-                timer: 1500
-              });
-
+            elementRef.current.disabled = false
+            buttonRef.current.disabled = false
         })
+        socket.on('disconnect', () => {
+            console.log('disconnetcing...')
+        })
+
+
+        return () => {
+            if(socket) socket.disconnect()
+            socket.off('connect');
+            socket.off('disconnect')
+        }
     }, [socket])
 
     useEffect(() => {
@@ -67,8 +101,17 @@ function Chat() {
 
         })
 
+        socket.on('partner-left', () => {
+            setAllTexts([])
+            setConnecting(true)
+            elementRef.current.disabled = true
+            buttonRef.current.disabled = true
+        })
+
         return () => {
-            socket.off('connect');
+            socket.off('partner')
+            socket.off('chat message')
+            socket.off('partner-left')
         };
     }, [socket])
 
@@ -109,22 +152,35 @@ function Chat() {
             
         
         </div>
+       
     
         <div className='border border-[1px]-[black] mt-2 p-4 box-border w-[95vw] text-center'>
- 
-            <button className='bg-[#0CA4D5]     text-[1.4rem] p-3 me-2 rounded-[5px] text-[white] ps-6 pe-6 hover:bg-[#048AB6]'
+        
+
+        <div className='absolute bottom-2 right-[18vw]'>
+
+        {
+            emojiPickerVisible&& <EmojiPicker onEmojiClick={(emoji) => handleEmojiPicked(emoji)}/>
+        }
+
+</div>
+
+            <button className='bg-[#0CA4D5] text-[1.4rem] p-3 me-2 rounded-[5px] text-[white] ps-6 pe-6 hover:bg-[#048AB6]'
             onClick={handleStart}
             >
-            Start
+            {
+                connecting ? "Stop" : "Start"
+            }
+            
             </button>
 
-            <input type="text" className='bg-[#EFEFE0] w-[75%] text-[1.4rem] border border-[1px]-[black] p-3' onChange={(e) => setText(e.target.value)} value={text}/>
-
-            <button className='bg-[#5CC102] text-[1.4rem] p-3 ms-2 rounded-[5px] text-[white] ps-6 pe-6 hover:bg-[#4FA503]' onClick={handleSubmit}>
+            <input type="text" className='bg-[#EFEFE0] w-[75%] text-[1.4rem] border border-[1px]-[black] p-3' onChange={(e) => setText(e.target.value)} value={text} ref={elementRef}/>
+            <button className='text-[2.4rem]' onClick={handleEmojiPicker}>🤓</button>
+            <button className='bg-[#5CC102] text-[1.4rem] p-3 ms-2 rounded-[5px] text-[white] ps-6 pe-6 hover:bg-[#4FA503]' onClick={handleSubmit} ref={buttonRef}>
                 Send
             </button>
         </div>
-
+        
     </div>
   )
 }

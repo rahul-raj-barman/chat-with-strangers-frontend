@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-
-
+// import WebRTCContextProvider from './rtc/context/WebRTCContextProvider'
+import UserContextProvider from './context/UserContextProvider'
+import Chat from './components/Chat';
+import HomePage from './components/HomePage';
 
 import {
     createBrowserRouter,
@@ -15,15 +17,21 @@ import {
       element: <App/>,
     },
     {
-        path: "/chat",
-      element: <div/>,
+      path: "/chat/:username",
+      element: <Chat/>,
+    },
+    {
+      path: '/home',
+      element: <HomePage/>
     }
   ]);
   
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
+    // <WebRTCContextProvider>
+    <UserContextProvider>
     <RouterProvider router={router} />
-  </React.StrictMode>
+    </UserContextProvider>
+  // </WebRTCContextProvider>
 );

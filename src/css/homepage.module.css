@@ -1,0 +1,84 @@
+.cont {
+    background-image: url('../assets/app_background.png');
+    width: 100vw;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.innerCont {
+    background-color: rgba(14, 20, 6, 0.846);
+    display: flex;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 5px;
+}
+
+.first, .second {
+    padding: 15px;
+
+}
+
+.first {
+    font-size: 1.4rem;
+    font-weight: 550;
+    color: rgb(238, 165, 165);
+}
+
+.second {
+    color: rgb(215, 207, 99);
+    font-size: 1.1rem;
+}
+
+.second::first-letter {
+    font-size: 1.4rem;
+    color: rgb(193, 244, 167);
+}
+
+.buttonCont {
+
+}
+
+.buttonCont>button {
+    margin: 10px;
+    background-color: rgb(44, 67, 86);
+    padding: 8px;
+    color: aliceblue;
+    border-radius: 5px;
+}
+
+
+@media screen and (max-width: 550px) {
+    .cont {
+        
+        background-image: url('../assets/background_mobile.png');
+        
+        background-color: yellowgreen;
+
+        height: 100vh;
+        width: 100vw;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .cont {
+
+        background-size:cover;
+    }
+
+}
